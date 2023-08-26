@@ -1,0 +1,14 @@
+spring:
+  thymeleaf:
+    cache: false
+    mode: HTML
+    
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    url: jdbc:db2://db:50000/animal
+    username: db2dude 
+    password: db2pw
+  

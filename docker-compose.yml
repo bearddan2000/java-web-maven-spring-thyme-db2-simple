@@ -1,0 +1,53 @@
+version: '3'
+services:
+  java-srv:
+    build: java-srv
+    ports:
+      - "80:8080"
+    depends_on:
+      - db
+    links:
+      - "db:db"
+    command: sh -c "/wait && mvn clean spring-boot:run"
+    environment:
+      - WAIT_HOSTS=db:50000
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=90
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+  
+  seed-db:
+    build: seed-db
+    depends_on:
+      - db
+    links:
+      - "db:db"
+    command: sh -c "/wait && mvn clean compile exec:java"
+    environment:
+      - WAIT_HOSTS=db:50000
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=120
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+
+  db:
+    image: ibmcom/db2
+    privileged: true
+    environment:
+      LICENSE: "accept"
+      DB2INSTANCE: "db2dude"
+      DB2INST1_PASSWORD: "db2pw"
+      DBNAME: "animal"
+      BLU: "false"
+      ENABLE_ORACLE_COMPATIBILITY: "false"
+      UPDATEVAIL: "NO"
+      TO_CREATE_SAMPLEDB: "false"
+      REPODB: "false"
+      IS_OSXFS: "true"
+      PERSISTENT_HOME: "true"
+      HADR_ENABLED: "false"
+      ETCD_ENDPOINT: ""
+      ETCD_USERNAME: ""
+      ETCD_PASSWORD: ""
+#    volumes:
+#      - ./db/sql:/database
+    ports:
+      - 50000
